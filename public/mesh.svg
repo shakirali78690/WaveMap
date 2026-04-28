@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150" width="100%" height="150">
+  <defs>
+    <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#b73bfe" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#00f3ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lineFade" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f3ff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#b73bfe" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Connections -->
+  <path d="M 50 75 L 150 25 L 250 75 L 150 125 Z" fill="none" stroke="url(#lineFade)" stroke-width="2">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+  </path>
+  <path d="M 150 25 L 150 125" fill="none" stroke="#00f3ff" stroke-width="1" stroke-dasharray="4,4">
+    <animate attributeName="stroke-dashoffset" values="0;20" dur="2s" repeatCount="indefinite" />
+  </path>
+  <path d="M 50 75 L 250 75" fill="none" stroke="#b73bfe" stroke-width="1" stroke-dasharray="4,4">
+    <animate attributeName="stroke-dashoffset" values="20;0" dur="2s" repeatCount="indefinite" />
+  </path>
+
+  <!-- Nodes -->
+  <!-- Left Node -->
+  <circle cx="50" cy="75" r="8" fill="#00f3ff">
+    <animate attributeName="r" values="6;9;6" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="50" cy="75" r="20" fill="url(#nodeGlow)">
+    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Top Node -->
+  <circle cx="150" cy="25" r="8" fill="#b73bfe">
+    <animate attributeName="r" values="6;9;6" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="150" cy="25" r="20" fill="url(#nodeGlow)">
+    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Right Node -->
+  <circle cx="250" cy="75" r="8" fill="#00f3ff">
+    <animate attributeName="r" values="6;9;6" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="250" cy="75" r="20" fill="url(#nodeGlow)">
+    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Bottom Node -->
+  <circle cx="150" cy="125" r="8" fill="#b73bfe">
+    <animate attributeName="r" values="6;9;6" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="150" cy="125" r="20" fill="url(#nodeGlow)">
+    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Moving Data Packet -->
+  <circle cx="50" cy="75" r="4" fill="#fff">
+    <animateMotion path="M 0 0 L 100 -50 L 200 0 L 100 50 Z" dur="4s" repeatCount="indefinite"/>
+  </circle>
+</svg>

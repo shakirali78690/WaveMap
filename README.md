@@ -43,11 +43,21 @@ WaveMap isn't just a UI; it's a comprehensive ecosystem comprising four major pi
 
 ### 1. 🌐 The 3D Engine (React Three Fiber)
 At the heart of WaveMap is a highly optimized WebGL engine built on Three.js and React Three Fiber.
+
+<div align="center">
+  <img src="./public/skeleton.svg" alt="Human Tracking" width="100%" />
+</div>
+
 - **Instanced Rendering:** Handles thousands of data points and geometries with zero frame drops.
 - **Dynamic Avatars:** Human tracking represented by articulated, animated 3D models with confidence-based opacity.
 - **Volumetric Lighting & Shaders:** Custom shaders that give the environment a glowing, holographic cyberpunk aesthetic.
 
 ### 2. 📡 Real-Time Telemetry Pipeline
+
+<div align="center">
+  <img src="./public/mesh.svg" alt="Mesh Network" width="100%" />
+</div>
+
 WaveMap thrives on live data. The application utilizes a highly resilient WebSocket adapter to ingest massive amounts of streaming telemetry.
 - **Sub-10ms Latency:** Optimized event loops ensure that movements in the real world reflect instantly in the 3D space.
 - **JSON Payload Processing:** Clean `onMessage` handlers map incoming X, Y, Z coordinates directly to Zustand stores, entirely bypassing React's standard (and slower) render cycle for critical position updates.
