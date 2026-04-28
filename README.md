@@ -1,16 +1,14 @@
 <div align="center">
-  <img src="public/hero.png" alt="WaveMap Hero Image" width="100%" style="border-radius: 10px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);" />
+  <img src="./public/hero.png" alt="WaveMap Hero Image" width="100%" />
   
-  <h1 align="center">π WaveMap: Spatial Intelligence Platform 🌐</h1>
+  <h1 align="center">WaveMap: Spatial Visualization Platform</h1>
   <p align="center">
-    <strong>WaveMap turns commodity WiFi signals into real-time spatial intelligence, human tracking, and high-fidelity 3D visualization.</strong>
+    <strong>A next-generation 3D web application for mapping, tracking, and analyzing spatial environments in real-time.</strong>
   </p>
 
   <p align="center">
     <a href="https://github.com/shakirali78690/WaveMap/stargazers"><img src="https://img.shields.io/github/stars/shakirali78690/WaveMap?style=for-the-badge&color=blue" alt="Stars Badge"/></a>
     <a href="https://github.com/shakirali78690/WaveMap/network/members"><img src="https://img.shields.io/github/forks/shakirali78690/WaveMap?style=for-the-badge&color=blue" alt="Forks Badge"/></a>
-    <a href="https://github.com/shakirali78690/WaveMap/issues"><img src="https://img.shields.io/github/issues/shakirali78690/WaveMap?style=for-the-badge&color=blue" alt="Issues Badge"/></a>
-    <a href="https://github.com/shakirali78690/WaveMap/pulls"><img src="https://img.shields.io/github/issues-pr/shakirali78690/WaveMap?style=for-the-badge&color=blue" alt="Pull Requests Badge"/></a>
   </p>
   
   <p align="center">
@@ -23,93 +21,63 @@
 
 ---
 
-> **Beta Software** — Under active development. WebSockets APIs and mock backends may change. Known limitations:
-> - Requires modern WebGL-capable browser for 3D rendering.
-> - High-density mesh networks may require optimization of WebSocket polling rates.
+WaveMap is a powerful, production-ready web application built to visualize physical spaces and human activity within them. By leveraging modern web technologies and 3D rendering, WaveMap provides an intuitive, high-performance interface for spatial intelligence and analytics.
 
-Contributions and bug reports welcome at [Issues](https://github.com/shakirali78690/WaveMap/issues).
+## ✨ Core Capabilities
 
----
+- **Interactive 3D Environments:** Explore spaces in full 3D, rendered beautifully with React Three Fiber.
+- **Real-Time Entity Tracking:** Monitor human avatars and digital entities moving through your environment via WebSocket telemetry.
+- **Canvas Room Editor:** A robust 2D editor that allows you to draw walls, place furniture, and instantly sync your designs to the 3D viewport.
+- **Live Analytics Dashboard:** A sleek, dark-themed Bento grid interface for managing data streams, viewing logs, and calibrating sensors.
+- **Simulation Mode:** Built-in mock data engines allow you to test and develop the frontend without needing live hardware.
 
-Turn ordinary WiFi into a visual spatial sensing system. Monitor rooms, track human movement, and visualize RF signals — all rendered in real-time in a high-fidelity 3D environment.
+## 🚀 Getting Started
 
-### π WaveMap is a spatial intelligence platform that turns radio signals into 3D environments.
+WaveMap is designed to be developer-friendly. You can run the entire platform locally in minutes.
 
-Every WiFi router fills a space with radio waves. When people move, they disturb those waves. WaveMap captures these Channel State Information (CSI) disturbances and translates them into actionable data and stunning visualizations: who's there, where they are, and how they interact with the space.
+### Installation
 
-**What it visualizes:**
-- **Presence and occupancy** — Real-time tracking of individuals via articulated human avatars.
-- **Environment mapping** — Canvas-based 2D room editor that syncs instantly with the 3D scene.
-- **Signal Intelligence** — Interactive dashboard displaying live CSI/RSSI telemetry via WebSocket.
-- **Privacy-First Tracking** — Confidence-based visual degradation ensures anonymity when tracking human figures.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/shakirali78690/WaveMap.git
+   cd WaveMap
+   ```
 
-Built on React 19, TypeScript, and React Three Fiber, WaveMap provides an unprecedented look at the invisible network surrounding us.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
----
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-## 🚀 Quick Start: Live Spatial Sensing
+4. **Experience WaveMap**
+   Open your browser and navigate to `http://localhost:5173`.
 
-WaveMap can run entirely locally using our built-in simulation engine, or connect to live hardware for real-time telemetry.
+## 🏗️ Technical Architecture
 
-```bash
-# Option 1: Run with Simulated Data (No hardware needed)
-git clone https://github.com/shakirali78690/WaveMap.git
-cd WaveMap
-npm install
-npm run dev
-# Open http://localhost:5173 to explore the 3D dashboard
-```
+WaveMap is built on a modern, robust tech stack tailored for high-performance visual computing:
 
-```bash
-# Option 2: Live sensing with Custom Hardware integration
-# Start the WaveMap application
-npm run dev
+- **Frontend Framework:** React 19 for highly responsive UI components.
+- **3D Engine:** Three.js and React Three Fiber for declarative, component-based 3D scene graphs.
+- **State Management:** Zustand for lightweight, fast, and scalable global state.
+- **Styling:** Custom Vanilla CSS utilizing modern CSS variables and glassmorphism techniques for a premium, futuristic aesthetic.
+- **Build Tool:** Vite for instantaneous hot module replacement (HMR) and optimized production builds.
 
-# In a separate terminal, pipe your CSI data to the WebSocket relay (Example script):
-node scripts/websocket-relay.js --port 8080 --target http://localhost:5173
-```
+## 🎨 UI/UX Philosophy
 
----
+The interface is engineered to feel like a premium command center. We employ:
+- Deep, immersive dark modes with neon accent colors.
+- Smooth CSS transitions and micro-animations for interactive feedback.
+- Clean, structured Bento-style layouts that present complex data effortlessly.
 
-## 🏗️ Architecture & Features
+## 🤝 Contributing
 
-WaveMap is engineered for high performance and modularity:
-
-### Real-Time 3D Spatial Viewport
-Powered by Three.js and React Three Fiber, the 3D engine renders interactive house mappings, dynamic RF visualizations, and avatar models at 60 FPS.
-
-### Advanced Analytics Dashboard
-A responsive, Bento-grid inspired interface built with pristine Vanilla CSS (avoiding heavy framework bloat) featuring modern glassmorphism, dynamic micro-animations, and curated neon color palettes.
-
-### Built-in Simulation Engine
-Testing algorithms? The integrated mock-data backend generates realistic, fluctuating CSI/RSSI streams to evaluate the frontend without requiring a live hardware mesh network.
-
-### Real-Time Canvas Room Editor
-Design spaces directly within the app using the 2D canvas room editor. Walls, furniture, and boundaries synchronize automatically with the 3D viewport.
+We welcome contributions! Please feel free to submit a Pull Request.
 
 ---
-
-## 📊 Performance
-
-- **Rendering**: Consistent 60fps on modern hardware with <15ms frame times.
-- **WebSocket Ingestion**: Processes up to 1,200 telemetry frames per second.
-- **Memory Footprint**: Highly optimized Three.js geometries and instanced meshes keep footprint < 100MB.
-
-## 🔒 Privacy & Security First
-
-Privacy is a core component of Wi-Fi sensing. WaveMap implements **confidence-based visual degradation** for human tracking. Instead of high-fidelity cameras, we use physics, ensuring movement is analyzed without ever capturing personal visual identity. 
-
----
-
-### What's New in v1.0.0
-- Added real-time 2D Canvas Room Editor with 3D synchronization.
-- Overhauled styling to feature premium dark-mode, neon highlights, and glassmorphic panels.
-- Implemented WebSocket adapters for low-latency live telemetry.
-- **ADR-001**: Migrated completely to React 19 and Vite for lightning-fast HMR and building.
-
----
-
 <div align="center">
-  <p>Built with 💡 and 📡 for the future of spatial intelligence.</p>
-  <p>MIT License • Copyright (c) 2026</p>
+  <p>Engineered for the future of web-based spatial mapping.</p>
 </div>
