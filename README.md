@@ -78,9 +78,11 @@ A powerful built-in 2D editor that allows users to map physical spaces dynamical
   <img src="./public/simulation.svg" alt="Simulated Telemetry" width="100%" />
 </div>
 
-Developing without hardware? WaveMap includes a sophisticated mock-data engine.
-- Generates realistic, jitter-inclusive movement patterns.
-- Simulates multi-node network latency and packet loss to ensure frontend resilience.
+Developing without hardware? WaveMap includes a highly sophisticated, deterministic mock-data engine (`src/data/simulator.ts`).
+- **Realistic Trajectories:** Generates plausible walking paths using room-aware waypoint navigation.
+- **Dynamic Posing:** Computes localized skeleton joints on the fly. If an avatar stops moving (e.g., speed drops below 0.1 m/s), the simulation generates realistic "idle" or "sitting" poses.
+- **RF Attenuation Modeling:** Confidence values are derived by casting rays between virtual occupants and sensors, properly dropping tracking quality through thick walls.
+- **Edge-Cases Included:** Simulates network latency, positional jitter, and total signal drops to ensure your frontend is highly resilient.
 
 ---
 
@@ -91,38 +93,53 @@ The codebase is strictly typed and organized for enterprise scalability:
 ```text
 📦 WaveMap
  ┣ 📂 src
- ┃ ┣ 📂 adapters      # WebSocket and HTTP data ingestion layers
- ┃ ┣ 📂 components    # React UI components (Dashboard, Editor)
- ┃ ┣ 📂 canvas        # 2D Room Editor logic
- ┃ ┣ 📂 store         # Zustand state management (UI, Entities, Sensing)
+ ┃ ┣ 📂 adapters      # WebSocket and Mock Simulator data ingestion layers
+ ┃ ┣ 📂 components    # React UI components (Dashboard, 3D Scene)
+ ┃ ┣ 📂 data          # Types, Sample Houses, and Simulator Logic
+ ┃ ┣ 📂 stores        # Zustand state management (UI, Entities, Sensing)
  ┃ ┣ 📂 styles        # Vanilla CSS, CSS Variables, Glassmorphism utilities
- ┃ ┣ 📂 types         # Strict TypeScript definitions for payloads
- ┃ ┗ 📂 viewport      # React Three Fiber 3D scene, models, and shaders
+ ┃ ┗ 📂 engine        # Core physics, tracker smoothing, and derivations
  ┣ 📂 public          # Static assets, hero images, animated SVGs
  ┣ 📜 index.html      # Vite entry point
  ┗ 📜 vite.config.ts  # Optimized build configuration
 ```
 
 ### State Management Strategy
-We use **Zustand** extensively to separate 3D rendering from UI rendering. By keeping entity coordinates in transient stores, the `useFrame` loop in Three.js can read positions directly without triggering expensive React component re-renders.
+We use **Zustand** extensively to separate 3D rendering from UI rendering. By keeping entity coordinates in transient stores, the `useFrame` loop in Three.js can read positions directly and apply shortest-path angle interpolation without triggering expensive React component re-renders.
 
 ---
 
-## 📡 API Integration: The WebSocket Payload
+## 📡 Hardware Integration (Real-World Setup)
 
-To feed live data into WaveMap, your backend simply needs to broadcast JSON payloads in the following format:
+While the simulation is great for UI development, WaveMap is ultimately built to be a frontend for physical sensing hardware like **TI mmWave Radars**, **ESP32 CSI** arrays, or camera tracking systems.
+
+### Switching to the WebSocket Adapter
+To bypass the simulation and use real hardware, switch the data source in your initialization code to the built-in **WebSocket Adapter** (`src/data/adapters/websocket.ts`).
+
+This adapter establishes a highly resilient, auto-reconnecting WebSocket link to your backend server.
+
+### The Expected Payload
+Your hardware or Python backend simply needs to broadcast JSON payloads in the following `DetectionFrame` format. WaveMap will automatically parse, smooth, and render the physical tracking data in 3D space:
 
 ```json
 {
-  "type": "ENTITY_UPDATE",
-  "timestamp": 1714316400000,
+  "type": "frame",
   "data": {
-    "id": "human_01",
-    "x": 4.52,
-    "y": 0.0,
-    "z": -2.15,
-    "confidence": 0.92,
-    "activity": "walking"
+    "seq": 1042,
+    "ts": 1714316400000,
+    "sqi": 0.85,
+    "entities": [
+      {
+        "id": "human_01",
+        "floorId": "floor-1",
+        "position": { "x": 4.52, "y": 0.0, "z": -2.15 },
+        "velocity": { "x": 0.5, "y": 0.0, "z": 0.1 },
+        "heading": 1.57,
+        "confidence": 0.92,
+        "state": "walking"
+      }
+    ],
+    "events": []
   }
 }
 ```
