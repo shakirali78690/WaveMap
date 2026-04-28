@@ -180,6 +180,9 @@ export type JointId =
 
 export type BodyState =
   | 'idle'
+  | 'sitting'
+  | 'lying'
+  | 'falling'
   | 'walking'
   | 'turning'
   | 'entering'

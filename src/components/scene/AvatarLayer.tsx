@@ -174,6 +174,60 @@ function DirectionArrow({ color }: { color: THREE.Color }) {
 }
 
 // ----------------------------------------------------------------
+// RF Reflection Visualizers
+// ----------------------------------------------------------------
+
+function RFScanSweep({ color }: { color: THREE.Color }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    const t = clock.getElapsedTime();
+    // Sweep vertically between 0.1 and 1.9 meters
+    meshRef.current.position.y = 1.0 + Math.sin(t * 2.5) * 0.9;
+  });
+
+  return (
+    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]}>
+      <ringGeometry args={[0.35, 0.45, 32]} />
+      <meshBasicMaterial color={color} transparent opacity={0.6} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} depthWrite={false} />
+    </mesh>
+  );
+}
+
+function RFRipples({ color }: { color: THREE.Color }) {
+  const ringsRef = useRef<THREE.Group>(null);
+  
+  useFrame(({ clock }) => {
+    if (!ringsRef.current) return;
+    const t = clock.getElapsedTime() * 1.5;
+    ringsRef.current.children.forEach((ring, i) => {
+      const offset = i * 0.33;
+      const progress = (t + offset) % 1;
+      const mesh = ring as THREE.Mesh;
+      const mat = mesh.material as THREE.MeshBasicMaterial;
+      
+      // Expand outward like a sonar ping
+      const scale = 0.5 + progress * 2.0;
+      mesh.scale.set(scale, scale, scale);
+      
+      // Fade out
+      mat.opacity = (1 - progress) * 0.5;
+    });
+  });
+
+  return (
+    <group ref={ringsRef} position={[0, 0.1, 0]}>
+      {[0, 1, 2].map(i => (
+        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.9, 0.95, 32]} />
+          <meshBasicMaterial color={color} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+// ----------------------------------------------------------------
 // Style A: Articulated avatar — torso volume + skeleton + head sphere.
 // ----------------------------------------------------------------
 
@@ -251,6 +305,10 @@ function ArticulatedAvatar({ pose, color, confidence }: { pose: import('@/data/t
           </mesh>
         );
       })}
+
+      {/* Real-time RF Reflection Visualizations */}
+      <RFScanSweep color={color} />
+      <RFRipples color={color} />
     </group>
   );
 }

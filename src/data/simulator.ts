@@ -133,6 +133,7 @@ export const SCENARIOS: Array<{ id: ScenarioId; label: string; description: stri
   { id: 'stationary',        label: 'Stationary Subject',  description: 'A single subject dwells, with micro-motion only.',           occupants: 1 },
   { id: 'intermittent-loss', label: 'Intermittent Loss',   description: 'Subject walks through walls; brief tracking loss segments.', occupants: 1 },
   { id: 'noisy-signal',      label: 'Noisy Signal',        description: 'Elevated RF noise floor; low-confidence tracking.',          occupants: 1 },
+  { id: 'fall-detection',    label: 'Fall Detection',      description: 'Subject walks normally, then suddenly falls to the floor.',  occupants: 1 },
 ];
 
 // ----------------------------------------------------------------
@@ -155,6 +156,8 @@ interface Occupant {
   seed: number;
   /** Optional static "loiter" center (for stationary scenarios). */
   loiterCenter?: Vec2;
+  /** Scenario specific trigger flag */
+  hasFallen?: boolean;
 }
 
 // ----------------------------------------------------------------
@@ -206,38 +209,92 @@ function computeConfidence(
 function synthesizePose(occ: Occupant, ts: number): PoseEstimate {
   // Height in meters, anatomical reference scale.
   const H = 1.75;
-  const p: Vec3 = { x: occ.pos.x, y: 0, z: occ.pos.y };
-  const yaw = occ.heading;
+  const p: Vec3 = { x: 0, y: 0, z: 0 }; // Strictly local coords
+  const yaw = 0; // Strictly local orientation
 
   // Gait cycle
   const phase = occ.phase;
-  const stride = Math.sin(phase * Math.PI * 2) * 0.22;
-  const swing = Math.sin(phase * Math.PI * 2 + Math.PI / 2) * 0.2;
-  const bob = Math.abs(Math.sin(phase * Math.PI * 2)) * 0.03;
+  const isSitting = occ.state === 'sitting';
+  const isLying = occ.state === 'lying';
+  const isFalling = occ.state === 'falling';
+  
+  // Normal gait components
+  const stride = (isSitting || isLying || isFalling) ? 0 : Math.sin(phase * Math.PI * 2) * 0.22;
+  const swing = (isSitting || isLying || isFalling) ? 0 : Math.sin(phase * Math.PI * 2 + Math.PI / 2) * 0.2;
+  const bob = (isSitting || isLying || isFalling) ? 0 : Math.abs(Math.sin(phase * Math.PI * 2)) * 0.03;
 
   const fwdX = Math.cos(yaw);
   const fwdZ = Math.sin(yaw);
   const rightX = Math.cos(yaw - Math.PI / 2);
   const rightZ = Math.sin(yaw - Math.PI / 2);
 
-  const joints: Partial<Record<JointId, Vec3>> = {
-    pelvis:    { x: p.x, y: H * 0.53 + bob, z: p.z },
-    spine:     { x: p.x, y: H * 0.63 + bob, z: p.z },
-    neck:      { x: p.x, y: H * 0.88 + bob, z: p.z },
-    head:      { x: p.x, y: H * 0.98 + bob, z: p.z },
-    shoulderL: { x: p.x + rightX * 0.18, y: H * 0.82 + bob, z: p.z + rightZ * 0.18 },
-    shoulderR: { x: p.x - rightX * 0.18, y: H * 0.82 + bob, z: p.z - rightZ * 0.18 },
-    elbowL:    { x: p.x + rightX * 0.22 - fwdX * swing, y: H * 0.62 + bob, z: p.z + rightZ * 0.22 - fwdZ * swing },
-    elbowR:    { x: p.x - rightX * 0.22 + fwdX * swing, y: H * 0.62 + bob, z: p.z - rightZ * 0.22 + fwdZ * swing },
-    wristL:    { x: p.x + rightX * 0.24 - fwdX * swing * 1.8, y: H * 0.44 + bob, z: p.z + rightZ * 0.24 - fwdZ * swing * 1.8 },
-    wristR:    { x: p.x - rightX * 0.24 + fwdX * swing * 1.8, y: H * 0.44 + bob, z: p.z - rightZ * 0.24 + fwdZ * swing * 1.8 },
-    hipL:      { x: p.x + rightX * 0.1, y: H * 0.5 + bob, z: p.z + rightZ * 0.1 },
-    hipR:      { x: p.x - rightX * 0.1, y: H * 0.5 + bob, z: p.z - rightZ * 0.1 },
-    kneeL:     { x: p.x + rightX * 0.1 + fwdX * stride, y: H * 0.28, z: p.z + rightZ * 0.1 + fwdZ * stride },
-    kneeR:     { x: p.x - rightX * 0.1 - fwdX * stride, y: H * 0.28, z: p.z - rightZ * 0.1 - fwdZ * stride },
-    ankleL:    { x: p.x + rightX * 0.1 + fwdX * stride * 1.6, y: 0.06, z: p.z + rightZ * 0.1 + fwdZ * stride * 1.6 },
-    ankleR:    { x: p.x - rightX * 0.1 - fwdX * stride * 1.6, y: 0.06, z: p.z - rightZ * 0.1 - fwdZ * stride * 1.6 },
-  };
+  let joints: Partial<Record<JointId, Vec3>>;
+
+  if (isLying) {
+    // Flat on the floor
+    joints = {
+      pelvis:    { x: 0, y: 0.1, z: 0 },
+      spine:     { x: 0, y: 0.1, z: -0.3 },
+      neck:      { x: 0, y: 0.1, z: -0.6 },
+      head:      { x: 0, y: 0.1, z: -0.8 },
+      shoulderL: { x: 0.2, y: 0.1, z: -0.5 },
+      shoulderR: { x: -0.2, y: 0.1, z: -0.5 },
+      elbowL:    { x: 0.35, y: 0.1, z: -0.4 },
+      elbowR:    { x: -0.35, y: 0.1, z: -0.4 },
+      wristL:    { x: 0.45, y: 0.1, z: -0.2 },
+      wristR:    { x: -0.45, y: 0.1, z: -0.2 },
+      hipL:      { x: 0.12, y: 0.1, z: 0 },
+      hipR:      { x: -0.12, y: 0.1, z: 0 },
+      kneeL:     { x: 0.15, y: 0.1, z: 0.4 },
+      kneeR:     { x: -0.15, y: 0.1, z: 0.4 },
+      ankleL:    { x: 0.18, y: 0.1, z: 0.8 },
+      ankleR:    { x: -0.18, y: 0.1, z: 0.8 },
+    };
+  } else if (isFalling) {
+    // Bracing for impact, midway to ground
+    joints = {
+      pelvis:    { x: 0, y: 0.4, z: 0 },
+      spine:     { x: 0, y: 0.5, z: -0.2 },
+      neck:      { x: 0, y: 0.4, z: -0.4 },
+      head:      { x: 0, y: 0.3, z: -0.5 },
+      shoulderL: { x: 0.2, y: 0.4, z: -0.3 },
+      shoulderR: { x: -0.2, y: 0.4, z: -0.3 },
+      elbowL:    { x: 0.25, y: 0.2, z: -0.4 },
+      elbowR:    { x: -0.25, y: 0.2, z: -0.4 },
+      wristL:    { x: 0.2, y: 0.05, z: -0.5 },
+      wristR:    { x: -0.2, y: 0.05, z: -0.5 },
+      hipL:      { x: 0.12, y: 0.4, z: 0 },
+      hipR:      { x: -0.12, y: 0.4, z: 0 },
+      kneeL:     { x: 0.1, y: 0.05, z: 0.2 },
+      kneeR:     { x: -0.1, y: 0.05, z: 0.2 },
+      ankleL:    { x: 0.1, y: 0.1, z: 0.4 },
+      ankleR:    { x: -0.1, y: 0.1, z: 0.4 },
+    };
+  } else {
+    // Normal / Sitting
+    const sitOffset = isSitting ? 0.35 : 0;
+    const kneeY = isSitting ? H * 0.28 : H * 0.28;
+    const ankleZ = isSitting ? 0.3 : 0;
+    
+    joints = {
+      pelvis:    { x: p.x, y: H * 0.53 + bob - sitOffset, z: p.z },
+      spine:     { x: p.x, y: H * 0.63 + bob - sitOffset, z: p.z },
+      neck:      { x: p.x, y: H * 0.88 + bob - sitOffset, z: p.z },
+      head:      { x: p.x, y: H * 0.98 + bob - sitOffset, z: p.z },
+      shoulderL: { x: p.x + rightX * 0.18, y: H * 0.82 + bob - sitOffset, z: p.z + rightZ * 0.18 },
+      shoulderR: { x: p.x - rightX * 0.18, y: H * 0.82 + bob - sitOffset, z: p.z - rightZ * 0.18 },
+      elbowL:    { x: p.x + rightX * 0.22 - fwdX * swing, y: H * 0.62 + bob - sitOffset, z: p.z + rightZ * 0.22 - fwdZ * swing + (isSitting ? 0.1 : 0) },
+      elbowR:    { x: p.x - rightX * 0.22 + fwdX * swing, y: H * 0.62 + bob - sitOffset, z: p.z - rightZ * 0.22 + fwdZ * swing + (isSitting ? 0.1 : 0) },
+      wristL:    { x: p.x + rightX * 0.24 - fwdX * swing * 1.8, y: H * 0.44 + bob - sitOffset + (isSitting ? 0.1 : 0), z: p.z + rightZ * 0.24 - fwdZ * swing * 1.8 + (isSitting ? 0.25 : 0) },
+      wristR:    { x: p.x - rightX * 0.24 + fwdX * swing * 1.8, y: H * 0.44 + bob - sitOffset + (isSitting ? 0.1 : 0), z: p.z - rightZ * 0.24 + fwdZ * swing * 1.8 + (isSitting ? 0.25 : 0) },
+      hipL:      { x: p.x + rightX * 0.1, y: H * 0.5 + bob - sitOffset, z: p.z + rightZ * 0.1 },
+      hipR:      { x: p.x - rightX * 0.1, y: H * 0.5 + bob - sitOffset, z: p.z - rightZ * 0.1 },
+      kneeL:     { x: p.x + rightX * 0.1 + fwdX * stride, y: kneeY, z: p.z + rightZ * 0.1 + fwdZ * stride + (isSitting ? 0.2 : 0) },
+      kneeR:     { x: p.x - rightX * 0.1 - fwdX * stride, y: kneeY, z: p.z - rightZ * 0.1 - fwdZ * stride + (isSitting ? 0.2 : 0) },
+      ankleL:    { x: p.x + rightX * 0.1 + fwdX * stride * 1.6, y: 0.06, z: p.z + rightZ * 0.1 + fwdZ * stride * 1.6 + ankleZ },
+      ankleR:    { x: p.x - rightX * 0.1 - fwdX * stride * 1.6, y: 0.06, z: p.z - rightZ * 0.1 - fwdZ * stride * 1.6 + ankleZ },
+    };
+  }
 
   // Joint confidence decays outward from torso — Wi-Fi sensing typically
   // solves the torso best and wrists/ankles worst.
@@ -363,6 +420,9 @@ export class WifiSensingSimulator implements DataSourceAdapter {
       case 'noisy-signal':
         this.occupants = [mkOccupant('e-1', livingCenter, 5)];
         break;
+      case 'fall-detection':
+        this.occupants = [mkOccupant('e-1', livingCenter, 6)];
+        break;
     }
   }
 
@@ -431,10 +491,34 @@ export class WifiSensingSimulator implements DataSourceAdapter {
       const prevRoom = occ.currentRoomId;
       const room = whichRoom(occ.pos, rooms);
       occ.currentRoomId = room?.id;
-      if (speed < 0.1) occ.state = 'idle';
-      else if (Math.abs(dh) > 0.6) occ.state = 'turning';
-      else occ.state = 'walking';
-      if (prevRoom && room && prevRoom !== room.id) occ.state = 'entering';
+      
+      // Fall Detection Scenario Logic
+      if (this.scenario === 'fall-detection') {
+        // Trigger a fall at a specific phase of the simulation
+        const sec = (Date.now() - this.startedAt) / 1000;
+        const fallCycle = sec % 15; // 15 second cycle
+        if (fallCycle > 5 && fallCycle < 6) {
+          occ.state = 'falling';
+          occ.speed = 0;
+          occ.hasFallen = true;
+        } else if (fallCycle >= 6 && fallCycle < 12) {
+          occ.state = 'lying';
+          occ.speed = 0;
+        } else if (fallCycle >= 12) {
+          occ.hasFallen = false;
+          occ.speed = 1.0;
+        }
+      }
+
+      // Normal Classification
+      if (occ.state !== 'falling' && occ.state !== 'lying') {
+        if (speed < 0.1) {
+          occ.state = occ.loiterCenter && (occ.seed % 2 === 0) ? 'sitting' : 'idle';
+        }
+        else if (Math.abs(dh) > 0.6) occ.state = 'turning';
+        else occ.state = 'walking';
+        if (prevRoom && room && prevRoom !== room.id) occ.state = 'entering';
+      }
     }
   }
 

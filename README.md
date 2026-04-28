@@ -111,7 +111,12 @@ We use **Zustand** extensively to separate 3D rendering from UI rendering. By ke
 
 ## 📡 Hardware Integration (Real-World Setup)
 
-While the simulation is great for UI development, WaveMap is ultimately built to be a frontend for physical sensing hardware like **TI mmWave Radars**, **ESP32 CSI** arrays, or camera tracking systems.
+While the simulation is great for UI development, WaveMap is ultimately built to be a frontend visualization platform for physical sensing hardware. **WaveMap itself runs in the browser and cannot physically extract Wi-Fi waves.**
+
+To achieve true RF sensing, your architecture must look like this:
+1. **Hardware Layer**: Devices like **TI mmWave Radars**, **ESP32 CSI** arrays, or Intel 5300 cards extract the raw Channel State Information (CSI) from the physical environment.
+2. **Backend AI Layer**: A dedicated server (typically running **Python/PyTorch**) processes this raw CSI matrix using neural networks (like CNNs or Transformers) to solve for room occupancy and skeletal poses.
+3. **Frontend Layer (WaveMap)**: The solved data is streamed to WaveMap via WebSockets, which renders the high-performance 3D visualization.
 
 ### Switching to the WebSocket Adapter
 To bypass the simulation and use real hardware, switch the data source in your initialization code to the built-in **WebSocket Adapter** (`src/data/adapters/websocket.ts`).
