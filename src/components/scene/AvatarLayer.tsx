@@ -60,6 +60,10 @@ interface AvatarProps {
 
 function Avatar({ state, selected, showUncertainty, onSelect }: AvatarProps) {
   const groupRef = useRef<THREE.Group>(null);
+  // Memoize the initial position so React doesn't overwrite our lerped position on every render
+  const initialPos = useMemo(() => new THREE.Vector3(state.position.x, 0, state.position.z), []);
+  const initialYaw = useMemo(() => -state.heading, []);
+
   const targetPos = useRef(new THREE.Vector3(state.position.x, 0, state.position.z));
   const targetYaw = useRef(-state.heading);
 
@@ -69,13 +73,17 @@ function Avatar({ state, selected, showUncertainty, onSelect }: AvatarProps) {
     targetYaw.current = -state.heading;
     const g = groupRef.current;
     g.position.lerp(targetPos.current, Math.min(1, dt * 8));
-    g.rotation.y = THREE.MathUtils.lerp(g.rotation.y, targetYaw.current, Math.min(1, dt * 6));
+    
+    // Shortest path angle interpolation to prevent 360-degree spins
+    let diff = targetYaw.current - g.rotation.y;
+    diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+    g.rotation.y += diff * Math.min(1, dt * 6);
   });
 
   const color = BAND_COLOR[state.band];
 
   return (
-    <group ref={groupRef} position={[state.position.x, 0, state.position.z]} onClick={(e) => { e.stopPropagation(); onSelect(); }}>
+    <group ref={groupRef} position={initialPos} rotation={[0, initialYaw, 0]} onClick={(e) => { e.stopPropagation(); onSelect(); }}>
       {/* Ground disc */}
       <GroundDisc color={color} selected={selected} />
 
