@@ -63,11 +63,21 @@ WaveMap thrives on live data. The application utilizes a highly resilient WebSoc
 - **JSON Payload Processing:** Clean `onMessage` handlers map incoming X, Y, Z coordinates directly to Zustand stores, entirely bypassing React's standard (and slower) render cycle for critical position updates.
 
 ### 3. 🛠️ Canvas Room Editor
+
+<div align="center">
+  <img src="./public/editor.svg" alt="Canvas 3D Extrusion" width="100%" />
+</div>
+
 A powerful built-in 2D editor that allows users to map physical spaces dynamically.
 - **Draw & Extrude:** Map 2D walls on the canvas, and watch them instantly extrude into 3D objects in the viewport.
 - **Asset Placement:** Place nodes, routers, and furniture accurately to reflect real-world RF obstacles.
 
 ### 4. 🧠 Simulation Engine
+
+<div align="center">
+  <img src="./public/simulation.svg" alt="Simulated Telemetry" width="100%" />
+</div>
+
 Developing without hardware? WaveMap includes a sophisticated mock-data engine.
 - Generates realistic, jitter-inclusive movement patterns.
 - Simulates multi-node network latency and packet loss to ensure frontend resilience.
