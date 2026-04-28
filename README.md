@@ -1,14 +1,19 @@
 <div align="center">
-  <img src="./public/hero.png" alt="WaveMap Hero Image" width="100%" />
+  <img src="./public/hero.png" alt="WaveMap Hero Image" width="100%" style="border-radius: 12px; box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);" />
   
-  <h1 align="center">WaveMap: Spatial Visualization Platform</h1>
+  <br />
+  <br />
+  <img src="./public/pulse.svg" alt="Data Stream" width="100%" />
+
+  <h1 align="center">WaveMap: Advanced Spatial Visualization Platform</h1>
   <p align="center">
-    <strong>A next-generation 3D web application for mapping, tracking, and analyzing spatial environments in real-time.</strong>
+    <strong>A next-generation, high-performance 3D web application for real-time spatial mapping, human telemetry tracking, and environmental analytics.</strong>
   </p>
 
   <p align="center">
-    <a href="https://github.com/shakirali78690/WaveMap/stargazers"><img src="https://img.shields.io/github/stars/shakirali78690/WaveMap?style=for-the-badge&color=blue" alt="Stars Badge"/></a>
-    <a href="https://github.com/shakirali78690/WaveMap/network/members"><img src="https://img.shields.io/github/forks/shakirali78690/WaveMap?style=for-the-badge&color=blue" alt="Forks Badge"/></a>
+    <a href="https://github.com/shakirali78690/WaveMap/stargazers"><img src="https://img.shields.io/github/stars/shakirali78690/WaveMap?style=for-the-badge&color=00f3ff" alt="Stars Badge"/></a>
+    <a href="https://github.com/shakirali78690/WaveMap/network/members"><img src="https://img.shields.io/github/forks/shakirali78690/WaveMap?style=for-the-badge&color=b73bfe" alt="Forks Badge"/></a>
+    <a href="https://github.com/shakirali78690/WaveMap/issues"><img src="https://img.shields.io/github/issues/shakirali78690/WaveMap?style=for-the-badge&color=00f3ff" alt="Issues Badge"/></a>
   </p>
   
   <p align="center">
@@ -16,68 +21,158 @@
     <img src="https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
     <img src="https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=threedotjs&logoColor=white" alt="Three.js" />
     <img src="https://img.shields.io/badge/Vite-B73BFE?style=flat-square&logo=vite&logoColor=FFD62E" alt="Vite" />
+    <img src="https://img.shields.io/badge/Zustand-4A4A55?style=flat-square&logo=react&logoColor=white" alt="Zustand" />
   </p>
 </div>
 
 ---
 
-WaveMap is a powerful, production-ready web application built to visualize physical spaces and human activity within them. By leveraging modern web technologies and 3D rendering, WaveMap provides an intuitive, high-performance interface for spatial intelligence and analytics.
+## 🌌 Introduction
 
-## ✨ Core Capabilities
+**WaveMap** is a cutting-edge spatial intelligence platform designed for the future of environment monitoring. By seamlessly translating raw data telemetry (like Channel State Information and RF signals) into a beautiful, immersive 3D space, WaveMap bridges the gap between invisible data and actionable spatial analytics.
 
-- **Interactive 3D Environments:** Explore spaces in full 3D, rendered beautifully with React Three Fiber.
-- **Real-Time Entity Tracking:** Monitor human avatars and digital entities moving through your environment via WebSocket telemetry.
-- **Canvas Room Editor:** A robust 2D editor that allows you to draw walls, place furniture, and instantly sync your designs to the 3D viewport.
-- **Live Analytics Dashboard:** A sleek, dark-themed Bento grid interface for managing data streams, viewing logs, and calibrating sensors.
-- **Simulation Mode:** Built-in mock data engines allow you to test and develop the frontend without needing live hardware.
+Whether you're tracking human movement in an office, analyzing the structural layout of a warehouse, or developing advanced WiFi sensing algorithms, WaveMap provides a flawless, real-time visualization layer.
 
-## 🚀 Getting Started
+<div align="center">
+  <img src="./public/radar.svg" alt="Radar Scan" width="150" />
+</div>
 
-WaveMap is designed to be developer-friendly. You can run the entire platform locally in minutes.
+## ✨ Core Ecosystem
 
-### Installation
+WaveMap isn't just a UI; it's a comprehensive ecosystem comprising four major pillars:
 
-1. **Clone the repository**
+### 1. 🌐 The 3D Engine (React Three Fiber)
+At the heart of WaveMap is a highly optimized WebGL engine built on Three.js and React Three Fiber.
+- **Instanced Rendering:** Handles thousands of data points and geometries with zero frame drops.
+- **Dynamic Avatars:** Human tracking represented by articulated, animated 3D models with confidence-based opacity.
+- **Volumetric Lighting & Shaders:** Custom shaders that give the environment a glowing, holographic cyberpunk aesthetic.
+
+### 2. 📡 Real-Time Telemetry Pipeline
+WaveMap thrives on live data. The application utilizes a highly resilient WebSocket adapter to ingest massive amounts of streaming telemetry.
+- **Sub-10ms Latency:** Optimized event loops ensure that movements in the real world reflect instantly in the 3D space.
+- **JSON Payload Processing:** Clean `onMessage` handlers map incoming X, Y, Z coordinates directly to Zustand stores, entirely bypassing React's standard (and slower) render cycle for critical position updates.
+
+### 3. 🛠️ Canvas Room Editor
+A powerful built-in 2D editor that allows users to map physical spaces dynamically.
+- **Draw & Extrude:** Map 2D walls on the canvas, and watch them instantly extrude into 3D objects in the viewport.
+- **Asset Placement:** Place nodes, routers, and furniture accurately to reflect real-world RF obstacles.
+
+### 4. 🧠 Simulation Engine
+Developing without hardware? WaveMap includes a sophisticated mock-data engine.
+- Generates realistic, jitter-inclusive movement patterns.
+- Simulates multi-node network latency and packet loss to ensure frontend resilience.
+
+---
+
+## 🛠️ Architecture Breakdown
+
+The codebase is strictly typed and organized for enterprise scalability:
+
+```text
+📦 WaveMap
+ ┣ 📂 src
+ ┃ ┣ 📂 adapters      # WebSocket and HTTP data ingestion layers
+ ┃ ┣ 📂 components    # React UI components (Dashboard, Editor)
+ ┃ ┣ 📂 canvas        # 2D Room Editor logic
+ ┃ ┣ 📂 store         # Zustand state management (UI, Entities, Sensing)
+ ┃ ┣ 📂 styles        # Vanilla CSS, CSS Variables, Glassmorphism utilities
+ ┃ ┣ 📂 types         # Strict TypeScript definitions for payloads
+ ┃ ┗ 📂 viewport      # React Three Fiber 3D scene, models, and shaders
+ ┣ 📂 public          # Static assets, hero images, animated SVGs
+ ┣ 📜 index.html      # Vite entry point
+ ┗ 📜 vite.config.ts  # Optimized build configuration
+```
+
+### State Management Strategy
+We use **Zustand** extensively to separate 3D rendering from UI rendering. By keeping entity coordinates in transient stores, the `useFrame` loop in Three.js can read positions directly without triggering expensive React component re-renders.
+
+---
+
+## 📡 API Integration: The WebSocket Payload
+
+To feed live data into WaveMap, your backend simply needs to broadcast JSON payloads in the following format:
+
+```json
+{
+  "type": "ENTITY_UPDATE",
+  "timestamp": 1714316400000,
+  "data": {
+    "id": "human_01",
+    "x": 4.52,
+    "y": 0.0,
+    "z": -2.15,
+    "confidence": 0.92,
+    "activity": "walking"
+  }
+}
+```
+
+---
+
+## 🚀 Installation & Deployment
+
+### Prerequisites
+- **Node.js**: v18.0.0 or higher.
+- **Hardware Acceleration**: A modern browser with WebGL 2.0 support enabled.
+
+### Local Development Setup
+
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/shakirali78690/WaveMap.git
    cd WaveMap
    ```
 
-2. **Install dependencies**
+2. **Install the dependencies:**
    ```bash
    npm install
+   # or
+   yarn install
+   # or
+   pnpm install
    ```
 
-3. **Start the development server**
+3. **Start the local Vite server:**
    ```bash
    npm run dev
    ```
 
-4. **Experience WaveMap**
-   Open your browser and navigate to `http://localhost:5173`.
+4. **Open WaveMap:**
+   Navigate to `http://localhost:5173`. The simulation engine will automatically initialize if no live WebSocket connection is detected.
 
-## 🏗️ Technical Architecture
+### Production Build
 
-WaveMap is built on a modern, robust tech stack tailored for high-performance visual computing:
+To compile WaveMap for production deployment (generates heavily minified and chunk-split assets):
 
-- **Frontend Framework:** React 19 for highly responsive UI components.
-- **3D Engine:** Three.js and React Three Fiber for declarative, component-based 3D scene graphs.
-- **State Management:** Zustand for lightweight, fast, and scalable global state.
-- **Styling:** Custom Vanilla CSS utilizing modern CSS variables and glassmorphism techniques for a premium, futuristic aesthetic.
-- **Build Tool:** Vite for instantaneous hot module replacement (HMR) and optimized production builds.
+```bash
+npm run build
+npm run preview
+```
+The resulting `dist/` folder can be hosted on Vercel, Netlify, AWS S3, or any standard static hosting service.
 
-## 🎨 UI/UX Philosophy
+---
 
-The interface is engineered to feel like a premium command center. We employ:
-- Deep, immersive dark modes with neon accent colors.
-- Smooth CSS transitions and micro-animations for interactive feedback.
-- Clean, structured Bento-style layouts that present complex data effortlessly.
+## 🎨 UI & Aesthetic Philosophy
+
+WaveMap uses a **Deep Dark Mode** aesthetic tailored for analytical clarity.
+- **Glassmorphism:** Dashboard panels use backdrop filters to allow the 3D environment to bleed through.
+- **Neon Accents:** Cyan (`#00f3ff`) and Purple (`#b73bfe`) are used strategically to indicate data flow, active nodes, and positive alerts.
+- **Micro-Animations:** Every button hover, panel opening, and data tick features customized CSS transition curves (`cubic-bezier`).
+
+<div align="center">
+  <img src="./public/pulse.svg" alt="Data Stream Footer" width="100%" />
+</div>
 
 ## 🤝 Contributing
 
-We welcome contributions! Please feel free to submit a Pull Request.
+We welcome contributions from the community! Whether it's adding new 3D models, optimizing the WebSocket adapter, or writing documentation:
+1. Fork the project.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
 
 ---
 <div align="center">
-  <p>Engineered for the future of web-based spatial mapping.</p>
+  <p>Engineered with 💡 and 📡 for the future of web-based spatial intelligence.</p>
 </div>

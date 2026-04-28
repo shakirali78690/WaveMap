@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="100%" height="100">
+  <defs>
+    <linearGradient id="lineGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b73bfe" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#b73bfe" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#b73bfe" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Main line -->
+  <line x1="0" y1="50" x2="400" y2="50" stroke="url(#lineGlow)" stroke-width="2"/>
+  
+  <!-- Flowing packet -->
+  <circle cx="0" cy="50" r="4" fill="#00f3ff">
+    <animate attributeName="cx" values="0;400" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="0" cy="50" r="4" fill="#00f3ff">
+    <animate attributeName="cx" values="0;400" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="0" cy="50" r="4" fill="#00f3ff">
+    <animate attributeName="cx" values="0;400" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+</svg>
